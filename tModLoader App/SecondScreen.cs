@@ -16,7 +16,7 @@ namespace SecondScreen
 		public static Socket socket;
         public ModPlayer me = null;
 
-        public ExtendThatShit()
+        public SecondScreen()
         {
             Properties = new ModProperties()
             {

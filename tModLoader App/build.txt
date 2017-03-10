@@ -1,3 +1,6 @@
 author = ACiD8
+
 version = 0.1
+
 displayName = Second Screen
+dllReferences = EngineIoClientDotNet, SocketIoClientDotNet, WebSocket4Net
