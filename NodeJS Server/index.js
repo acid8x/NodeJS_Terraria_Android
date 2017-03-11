@@ -15,9 +15,15 @@ http.listen(2222, function () {
 io.on('connection', function(socket) {
 	socket.Ident = id++;
 	console.log(socket.Ident + " connected");
-		 
-	socket.on('message', function(data) {
-		socket.broadcast.emit('message', data);
+	
+	socket.on('completeItem', function(data) {
+		console.log(data);
+		socket.broadcast.emit('completeItem', data);
+	});
+	
+	socket.on('stackOnly', function(data) {
+		console.log(data);
+		socket.broadcast.emit('stackOnly', data);
 	});
 		
 	socket.on('disconnect', function() {
