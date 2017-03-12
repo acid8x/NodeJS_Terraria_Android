@@ -1,37 +1,20 @@
 package com.example.acid8xtreme.socket_io_example;
 
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.util.Base64;
 import android.view.Display;
-import android.view.KeyEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.GridLayout;
-import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
-import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import android.os.PowerManager;
 
 public class MainActivity extends FragmentActivity {
 
@@ -39,6 +22,8 @@ public class MainActivity extends FragmentActivity {
     private MainFragment mainFragment = null;
     private boolean landscape;
     private int activityInfo;
+
+    protected PowerManager.WakeLock mWakeLock;
 
     private final Handler mHandler = new Handler() {
         @Override
@@ -103,6 +88,9 @@ public class MainActivity extends FragmentActivity {
         int width = size.x;
         int height = size.y;
         loadTextViewArray();
+        final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        this.mWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "My Tag");
+        this.mWakeLock.acquire();
         if (savedInstanceState == null) {
             mainFragment = MainFragment.newInstance(mHandler);
             getSupportFragmentManager().beginTransaction().add(mainFragment, "worker").commit();
@@ -111,9 +99,16 @@ public class MainActivity extends FragmentActivity {
     }
 
     @Override
-    public void onBackPressed() {
+    public void onDestroy() {
+        this.mWakeLock.release();
         finishAndRemoveTask();
         System.exit(0);
+        super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        onDestroy();
     }
 
     private void loadTextViewArray() {

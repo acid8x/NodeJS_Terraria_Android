@@ -762,7 +762,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/guideline1"
-        app:layout_constraintGuide_percent="0.0"
+        app:layout_constraintGuide_percent="0.1"
         android:orientation="horizontal"
         tools:layout_editor_absoluteY="0dp"
         tools:layout_editor_absoluteX="0dp"/>
@@ -771,7 +771,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/guideline2"
-        app:layout_constraintGuide_percent="0.11"
+        app:layout_constraintGuide_percent="0.18"
         android:orientation="horizontal"
         tools:layout_editor_absoluteY="77dp"
         tools:layout_editor_absoluteX="0dp"/>
@@ -780,7 +780,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/guideline3"
-        app:layout_constraintGuide_percent="0.22"
+        app:layout_constraintGuide_percent="0.26"
         android:orientation="horizontal"
         tools:layout_editor_absoluteY="154dp"
         tools:layout_editor_absoluteX="0dp"/>
@@ -789,7 +789,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/guideline4"
-        app:layout_constraintGuide_percent="0.33"
+        app:layout_constraintGuide_percent="0.34"
         android:orientation="horizontal"
         tools:layout_editor_absoluteY="230dp"
         tools:layout_editor_absoluteX="0dp"/>
@@ -798,7 +798,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/guideline5"
-        app:layout_constraintGuide_percent="0.44"
+        app:layout_constraintGuide_percent="0.42"
         android:orientation="horizontal"
         tools:layout_editor_absoluteY="307dp"
         tools:layout_editor_absoluteX="0dp"/>
@@ -807,7 +807,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/guideline6"
-        app:layout_constraintGuide_percent="0.55"
+        app:layout_constraintGuide_percent="0.50"
         android:orientation="horizontal"
         tools:layout_editor_absoluteY="384dp"
         tools:layout_editor_absoluteX="0dp"/>
