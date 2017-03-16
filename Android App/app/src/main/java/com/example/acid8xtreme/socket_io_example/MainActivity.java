@@ -1,6 +1,5 @@
 package com.example.acid8xtreme.socket_io_example;
 
-import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,18 +11,17 @@ import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.util.Base64;
 import android.view.Display;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 
-import android.os.PowerManager;
-
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements View.OnClickListener {
 
     public TextView[] slots;
     private MainFragment mainFragment = null;
     private boolean landscape;
-    private int activityInfo;
-
-    protected PowerManager.WakeLock mWakeLock;
+    private int activityInfo, width, height, selected = -1;
 
     private final Handler mHandler = new Handler() {
         @Override
@@ -63,6 +61,12 @@ public class MainActivity extends FragmentActivity {
                         slots[id].setText(stack);
                     }
                     break;
+                case Constants.MESSAGE_PLAYER_INFO:
+                    if (message != null) {
+                        char[] array = message.toCharArray();
+                        int id = 0;
+                    }
+                    break;
             }
         }
     };
@@ -85,12 +89,10 @@ public class MainActivity extends FragmentActivity {
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
-        int width = size.x;
-        int height = size.y;
+        width = size.x;
+        height = size.y;
         loadTextViewArray();
-        final PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        this.mWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "My Tag");
-        this.mWakeLock.acquire();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if (savedInstanceState == null) {
             mainFragment = MainFragment.newInstance(mHandler);
             getSupportFragmentManager().beginTransaction().add(mainFragment, "worker").commit();
@@ -100,7 +102,6 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     public void onDestroy() {
-        this.mWakeLock.release();
         finishAndRemoveTask();
         System.exit(0);
         super.onDestroy();
@@ -109,6 +110,25 @@ public class MainActivity extends FragmentActivity {
     @Override
     public void onBackPressed() {
         onDestroy();
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (selected == -1) {
+            for (int i = 0; i < 50; i++) {
+                if (slots[i] == v) {
+                    selected = i;
+                    break;
+                }
+            }
+        } else {
+            for (int i = 0; i < 50; i++) {
+                if (slots[i] == v) {
+                    // TODO: 2017-03-15 Emit slot change 
+                    break;
+                }
+            }
+        }
     }
 
     private void loadTextViewArray() {
@@ -163,5 +183,6 @@ public class MainActivity extends FragmentActivity {
         slots[47] = (TextView) findViewById(R.id.tv47);
         slots[48] = (TextView) findViewById(R.id.tv48);
         slots[49] = (TextView) findViewById(R.id.tv49);
+        for (int i = 0; i < 50; i++) slots[i].setOnClickListener(this);
     }
 }

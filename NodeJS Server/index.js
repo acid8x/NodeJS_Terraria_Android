@@ -17,13 +17,15 @@ io.on('connection', function(socket) {
 	console.log(socket.Ident + " connected");
 	
 	socket.on('completeItem', function(data) {
-		console.log(data);
 		socket.broadcast.emit('completeItem', data);
 	});
 	
 	socket.on('stackOnly', function(data) {
-		console.log(data);
 		socket.broadcast.emit('stackOnly', data);
+	});
+	
+	socket.on('playerInfo', function(data) {
+		socket.broadcast.emit('playerInfo', data);
 	});
 		
 	socket.on('disconnect', function() {

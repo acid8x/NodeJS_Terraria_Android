@@ -28,6 +28,7 @@ public class MainFragment extends Fragment {
         mSocket = app.getSocket();
         mSocket.on("completeItem", onCompleteItem);
         mSocket.on("stackOnly", onStackOnly);
+        mSocket.on("playerInfo", onPlayerInfo);
         mSocket.connect();
     }
 
@@ -37,10 +38,7 @@ public class MainFragment extends Fragment {
         mSocket.disconnect();
         mSocket.off("completeItem", onCompleteItem);
         mSocket.off("stackOnly", onStackOnly);
-    }
-
-    public void attemptSend(String message) {
-        if (mSocket != null && mSocket.connected() && !message.equals("")) mSocket.emit("message", message);
+        mSocket.off("playerInfo", onPlayerInfo);
     }
 
     private Emitter.Listener onCompleteItem = new Emitter.Listener() {
@@ -60,7 +58,6 @@ public class MainFragment extends Fragment {
         }
     };
 
-
     private Emitter.Listener onStackOnly = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -69,6 +66,23 @@ public class MainFragment extends Fragment {
                 public void run() {
                     String message = (String) args[0];
                     Message SocketMsg = mHandler.obtainMessage(Constants.MESSAGE_STACK_ONLY);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("MESSAGE", message);
+                    SocketMsg.setData(bundle);
+                    mHandler.sendMessage(SocketMsg);
+                }
+            });
+        }
+    };
+
+    private Emitter.Listener onPlayerInfo = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    String message = (String) args[0];
+                    Message SocketMsg = mHandler.obtainMessage(Constants.MESSAGE_PLAYER_INFO);
                     Bundle bundle = new Bundle();
                     bundle.putString("MESSAGE", message);
                     SocketMsg.setData(bundle);
