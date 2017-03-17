@@ -6,5 +6,5 @@ interface Constants {
     int MESSAGE_STACK_ONLY = 2;
     int MESSAGE_PLAYER_INFO = 3;
 		
-    String SOCKET_IO_SERVER = "http://192.168.0.116:2222";
+    String SOCKET_IO_SERVER = "http://192.168.1.12:2222";
 }

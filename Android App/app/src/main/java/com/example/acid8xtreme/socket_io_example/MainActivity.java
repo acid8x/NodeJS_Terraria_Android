@@ -3,29 +3,35 @@ package com.example.acid8xtreme.socket_io_example;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.FragmentActivity;
 import android.util.Base64;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
 
     public TextView[] slots;
+    public static TextView hp = null, mp = null;
+    public static int hhp = 0, mmp = 0;
     private MainFragment mainFragment = null;
     private boolean landscape;
-    private int activityInfo, width, height, selected = -1;
+    private int activityInfo, width, selected = -1;
+    public double len = -1;
 
     private final Handler mHandler = new Handler() {
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(final Message msg) {
             String message = msg.getData().getString("MESSAGE");
             int state = 0;
             switch (msg.what) {
@@ -37,7 +43,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                         String base64 = "";
                         for (int i = 0; i < message.length(); i++) {
                             if (array[i] == ',' && state < 2) state++;
-                            else if (state == 0) id = (id*10)+(array[i]-48);
+                            else if (state == 0) id = (id * 10) + (array[i] - 48);
                             else if (state == 1) stack += array[i];
                             else base64 += array[i];
                         }
@@ -46,6 +52,8 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                         BitmapDrawable ob = new BitmapDrawable(getResources(), decodedByte);
                         slots[id].setBackground(ob);
                         slots[id].setText(stack);
+                        if (stack.equals("0")) slots[id].setTextColor(Color.BLACK);
+                        else if (slots[id].getCurrentTextColor() != Color.RED) slots[id].setTextColor(Color.RED);
                     }
                     break;
                 case Constants.MESSAGE_STACK_ONLY:
@@ -55,17 +63,30 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                         String stack = "";
                         for (int i = 0; i < message.length(); i++) {
                             if (array[i] == ',' && state < 1) state++;
-                            else if (state == 0) id = (id*10)+(array[i]-48);
+                            else if (state == 0) id = (id * 10) + (array[i] - 48);
                             else stack += array[i];
+                            if (stack.equals("0")) slots[id].setTextColor(Color.BLACK);
+                            else if (slots[id].getCurrentTextColor() != Color.RED) slots[id].setTextColor(Color.RED);
                         }
                         slots[id].setText(stack);
                     }
                     break;
                 case Constants.MESSAGE_PLAYER_INFO:
-                    if (message != null) {
-                        char[] array = message.toCharArray();
-                        int id = 0;
-                    }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            int hhp = msg.getData().getInt("HP");
+                            int mmp = msg.getData().getInt("MP");
+                            ViewGroup.LayoutParams params = hp.getLayoutParams();
+                            params.width = hhp;
+                            hp.setLayoutParams(params);
+                            params = mp.getLayoutParams();
+                            params.width = mmp;
+                            mp.setLayoutParams(params);
+                            hp.setText(""+hhp);
+                            mp.setText(""+mmp);
+                        }
+                    });
                     break;
             }
         }
@@ -89,8 +110,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
-        width = size.x;
-        height = size.y;
+        width = size.x/23;
         loadTextViewArray();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if (savedInstanceState == null) {
@@ -124,7 +144,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         } else {
             for (int i = 0; i < 50; i++) {
                 if (slots[i] == v) {
-                    // TODO: 2017-03-15 Emit slot change 
+                    mainFragment.attemptSend("move", "" + selected + "," + i);
                     break;
                 }
             }
@@ -183,6 +203,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         slots[47] = (TextView) findViewById(R.id.tv47);
         slots[48] = (TextView) findViewById(R.id.tv48);
         slots[49] = (TextView) findViewById(R.id.tv49);
+        hp = (TextView) findViewById(R.id.hp);
+        mp = (TextView) findViewById(R.id.mp);
+
         for (int i = 0; i < 50; i++) slots[i].setOnClickListener(this);
     }
 }

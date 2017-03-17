@@ -3,6 +3,7 @@ package com.example.acid8xtreme.socket_io_example;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.renderscript.RenderScript;
 import android.support.v4.app.Fragment;
 
 import io.socket.client.Socket;
@@ -30,6 +31,23 @@ public class MainFragment extends Fragment {
         mSocket.on("stackOnly", onStackOnly);
         mSocket.on("playerInfo", onPlayerInfo);
         mSocket.connect();
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                boolean connected = false;
+                while (!connected) {
+                    connected = mSocket.connected();
+
+                    try {
+                        Thread.sleep(1000);
+                    } catch (Exception e) {
+                        // TODO: 2017-03-16
+                    }
+                }
+                attemptSend("renew", "");
+            }
+        });
+        thread.start();
     }
 
     @Override
@@ -39,6 +57,10 @@ public class MainFragment extends Fragment {
         mSocket.off("completeItem", onCompleteItem);
         mSocket.off("stackOnly", onStackOnly);
         mSocket.off("playerInfo", onPlayerInfo);
+    }
+
+    public void attemptSend(String type, String message) {
+        if (mSocket != null && mSocket.connected()) mSocket.emit(type, message);
     }
 
     private Emitter.Listener onCompleteItem = new Emitter.Listener() {
@@ -82,9 +104,19 @@ public class MainFragment extends Fragment {
                 @Override
                 public void run() {
                     String message = (String) args[0];
+                    int hp = 0, mp = 0;
+                    boolean first = true;
+                    char[] array = message.toCharArray();
+                    for (char c : array) {
+                        if (c == ',') first = false;
+                        else if (first) hp = (hp*10)+(c-48);
+                        else mp = (mp*10)+(c-48);
+                    }
                     Message SocketMsg = mHandler.obtainMessage(Constants.MESSAGE_PLAYER_INFO);
                     Bundle bundle = new Bundle();
                     bundle.putString("MESSAGE", message);
+                    bundle.putInt("HP", hp);
+                    bundle.putInt("MP", mp);
                     SocketMsg.setData(bundle);
                     mHandler.sendMessage(SocketMsg);
                 }
