@@ -4,30 +4,28 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.FragmentActivity;
 import android.util.Base64;
-import android.view.Display;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
 
     public TextView[] slots;
-    public static TextView hp = null, mp = null;
-    public static int hhp = 0, mmp = 0;
+    public ProgressBar hp = null, mp = null;
+    public TextView tvHp = null, tvMp = null;
+    public int hhp = 0, mmp = 0;
     private MainFragment mainFragment = null;
     private boolean landscape;
     private int activityInfo, width, selected = -1;
     public double len = -1;
+    public long timer = 0;
 
     private final Handler mHandler = new Handler() {
         @Override
@@ -75,16 +73,17 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            int hhp = msg.getData().getInt("HP");
-                            int mmp = msg.getData().getInt("MP");
-                            ViewGroup.LayoutParams params = hp.getLayoutParams();
-                            params.width = hhp;
-                            hp.setLayoutParams(params);
-                            params = mp.getLayoutParams();
-                            params.width = mmp;
-                            mp.setLayoutParams(params);
-                            hp.setText(""+hhp);
-                            mp.setText(""+mmp);
+                            int hhp = 0, mmp = 0;
+                            int[] val = msg.getData().getIntArray("PLAYERINFO");
+                            if (val != null) {
+                                hhp = (val[0]*100) / val[1];
+                                mmp = (val[2]*100) / val[3];
+
+                                tvHp.setText("" + val[0] + " / " + val[1]);
+                                tvMp.setText("" + val[2] + " / " + val[3]);
+                            }
+                            hp.setProgress(hhp);
+                            mp.setProgress(mmp);
                         }
                     });
                     break;
@@ -107,10 +106,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Display display = getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        width = size.x/23;
         loadTextViewArray();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if (savedInstanceState == null) {
@@ -137,6 +132,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         if (selected == -1) {
             for (int i = 0; i < 50; i++) {
                 if (slots[i] == v) {
+                    timer = now();
                     selected = i;
                     break;
                 }
@@ -144,11 +140,17 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         } else {
             for (int i = 0; i < 50; i++) {
                 if (slots[i] == v) {
-                    mainFragment.attemptSend("move", "" + selected + "," + i);
+                    if (selected != i) mainFragment.attemptSend("move", "" + selected + "," + i);
+                    else if (now() - 500 < timer) mainFragment.attemptSend("use", "" + selected);
                     break;
                 }
             }
+            selected = -1;
         }
+    }
+
+    public long now() {
+        return System.currentTimeMillis();
     }
 
     private void loadTextViewArray() {
@@ -203,8 +205,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         slots[47] = (TextView) findViewById(R.id.tv47);
         slots[48] = (TextView) findViewById(R.id.tv48);
         slots[49] = (TextView) findViewById(R.id.tv49);
-        hp = (TextView) findViewById(R.id.hp);
-        mp = (TextView) findViewById(R.id.mp);
+        hp = (ProgressBar) findViewById(R.id.hp);
+        mp = (ProgressBar) findViewById(R.id.mp);
+        tvHp = (TextView) findViewById(R.id.tvHp);
+        tvMp = (TextView) findViewById(R.id.tvMp);
 
         for (int i = 0; i < 50; i++) slots[i].setOnClickListener(this);
     }

@@ -8,34 +8,62 @@
     android:background="#f000"
     tools:context="com.example.acid8xtreme.socket_io_example.MainActivity">
 
-    <TextView
+    <ProgressBar
         android:id="@+id/hp"
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="2dp"
-        android:background="#f00"
-        android:gravity="bottom|start"
-        android:textAlignment="gravity"
-        android:textColor="#afff"
-        android:textSize="36sp"
+        android:layout_margin="10dp"
+        android:max="100"
+        android:progress="0"
+        android:progressDrawable="@drawable/progress_hp"
         app:layout_constraintBottom_toTopOf="@+id/guideline1"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/mp"
         app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
-        android:id="@+id/mp"
+        android:id="@+id/tvHp"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="2dp"
-        android:background="#00f"
-        android:gravity="bottom|start"
-        android:textAlignment="gravity"
-        android:textColor="#afff"
+        android:textColor="#fff"
         android:textSize="36sp"
+        android:layout_marginStart="25dp"
+        android:text="LOADING"
+        android:gravity="center_vertical|start"
+        android:textAlignment="gravity"
         app:layout_constraintBottom_toTopOf="@+id/guideline1"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/mp"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <ProgressBar
+        android:id="@+id/mp"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        android:max="100"
+        android:progress="0"
+        android:progressDrawable="@drawable/progress_mp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline1"
         app:layout_constraintLeft_toRightOf="@+id/hp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/tvMp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:textColor="#fff"
+        android:textSize="36sp"
+        android:layout_marginStart="40dp"
+        android:text="LOADING"
+        android:gravity="center_vertical|start"
+        android:textAlignment="gravity"
+        app:layout_constraintBottom_toTopOf="@+id/guideline1"
+        app:layout_constraintLeft_toRightOf="@+id/hp"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView

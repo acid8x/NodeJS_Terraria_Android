@@ -104,19 +104,16 @@ public class MainFragment extends Fragment {
                 @Override
                 public void run() {
                     String message = (String) args[0];
-                    int hp = 0, mp = 0;
-                    boolean first = true;
+                    int index = 0;
+                    int[] val = {0,0,0,0};
                     char[] array = message.toCharArray();
                     for (char c : array) {
-                        if (c == ',') first = false;
-                        else if (first) hp = (hp*10)+(c-48);
-                        else mp = (mp*10)+(c-48);
+                        if (c > 47 && c < 58) val[index] = (val[index] * 10) + (c-48);
+                        else index++;
                     }
                     Message SocketMsg = mHandler.obtainMessage(Constants.MESSAGE_PLAYER_INFO);
                     Bundle bundle = new Bundle();
-                    bundle.putString("MESSAGE", message);
-                    bundle.putInt("HP", hp);
-                    bundle.putInt("MP", mp);
+                    bundle.putIntArray("PLAYERINFO", val);
                     SocketMsg.setData(bundle);
                     mHandler.sendMessage(SocketMsg);
                 }

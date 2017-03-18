@@ -20,11 +20,14 @@ io.on('connection', function(socket) {
 	
 	socket.on('renew', function() {
 		socket.broadcast.emit('renew');
-	});	
-	
+	});		
 	
 	socket.on('move', function(data) {
 		socket.broadcast.emit('move', data);
+	});	
+	
+	socket.on('use', function(data) {
+		socket.broadcast.emit('use', data);
 	});	
 	
 	socket.on('completeItem', function(data) {
