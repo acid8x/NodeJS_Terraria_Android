@@ -6,7 +6,7 @@ var
   id = 0;
 
 http = require('http').createServer(app);
-io = require('socket.io')(http, { pingInterval: 500 });
+io = require('socket.io')(http);
 
 http.listen(2222, function () {
 	require('dns').lookup(require('os').hostname(), function (err, add, fam) {

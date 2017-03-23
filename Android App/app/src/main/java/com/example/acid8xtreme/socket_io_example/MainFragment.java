@@ -3,14 +3,13 @@ package com.example.acid8xtreme.socket_io_example;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.renderscript.RenderScript;
 import android.support.v4.app.Fragment;
 
+import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.net.URISyntaxException;
 
 public class MainFragment extends Fragment {
 
@@ -25,29 +24,15 @@ public class MainFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ChatApplication app = (ChatApplication) getActivity().getApplication();
-        mSocket = app.getSocket();
+        try {
+            mSocket = IO.socket(MainActivity.SOCKET_IO_SERVER);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
         mSocket.on("completeItem", onCompleteItem);
         mSocket.on("stackOnly", onStackOnly);
         mSocket.on("playerInfo", onPlayerInfo);
         mSocket.connect();
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                boolean connected = false;
-                while (!connected) {
-                    connected = mSocket.connected();
-
-                    try {
-                        Thread.sleep(1000);
-                    } catch (Exception e) {
-                        // TODO: 2017-03-16
-                    }
-                }
-                attemptSend("renew", "");
-            }
-        });
-        thread.start();
     }
 
     @Override

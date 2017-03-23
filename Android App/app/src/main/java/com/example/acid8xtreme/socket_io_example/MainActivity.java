@@ -1,6 +1,7 @@
 package com.example.acid8xtreme.socket_io_example;
 
-import android.content.pm.ActivityInfo;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -14,6 +15,11 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class MainActivity extends FragmentActivity implements View.OnClickListener {
 
@@ -23,9 +29,10 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     public int hhp = 0, mmp = 0;
     private MainFragment mainFragment = null;
     private boolean landscape;
-    private int activityInfo, width, selected = -1;
+    private int selected = -1;
     public double len = -1;
     public long timer = 0;
+    public static String SOCKET_IO_SERVER = "";
 
     private final Handler mHandler = new Handler() {
         @Override
@@ -93,21 +100,16 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        int orientation = getResources().getConfiguration().orientation;
-        int rotation = getWindowManager().getDefaultDisplay().getRotation();
-        if (orientation == 2) {
-            landscape = true;
-            if (rotation < 2) activityInfo = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-            if (rotation > 1) activityInfo = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
-        } else if (orientation == 1) {
-            landscape = false;
-            if (rotation < 2) activityInfo = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-            if (rotation > 1) activityInfo = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
-        }
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(GetServerActivity.activityInfo);
+        Intent intent = getIntent();
+        final Bundle bundle = intent.getExtras();
         setContentView(R.layout.activity_main);
         loadTextViewArray();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        if (bundle != null) {
+            SOCKET_IO_SERVER = bundle.getString("SOCKET");
+        }
         if (savedInstanceState == null) {
             mainFragment = MainFragment.newInstance(mHandler);
             getSupportFragmentManager().beginTransaction().add(mainFragment, "worker").commit();
@@ -125,6 +127,30 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     @Override
     public void onBackPressed() {
         onDestroy();
+    }
+
+    public void saveInformation(String file) {
+        try {
+            FileOutputStream fos = openFileOutput(file, Context.MODE_PRIVATE);
+            fos.write(file.getBytes());
+            fos.close();
+        } catch (Throwable t) {
+            Toast.makeText(this, "Exception: " + t.toString(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void readInformations(String file) {
+        String contents = "";
+        try {
+            FileInputStream fin = openFileInput(file);
+            int i;
+            while ((i = fin.read()) != -1) {
+                contents = contents + Character.toString((char) i);
+            }
+        }
+        catch (IOException t) {
+            Toast.makeText(this, "Exception: " + t.toString(), Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
